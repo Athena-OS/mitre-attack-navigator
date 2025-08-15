@@ -1,0 +1,44 @@
+name: Release bundle (with submodules)
+
+on:
+  workflow_dispatch:
+  #release:
+  #  types: [published]
+
+permissions:
+  contents: write  # required to upload assets to the release
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout release tag (with submodules)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set package name
+        run: echo "PKG_NAME=${GITHUB_REPOSITORY##*/}-${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Prepare clean package directory
+        run: |
+          mkdir "$PKG_NAME"
+          shopt -s dotglob
+          cp -R * "$PKG_NAME"/
+          # Remove any VCS metadata (parent + submodules)
+          find "$PKG_NAME" -name ".git" -type d -prune -exec rm -rf {} +
+
+      - name: Create archives
+        run: |
+          tar -czf "${PKG_NAME}.tar.gz" "$PKG_NAME"
+          zip -r "${PKG_NAME}.zip" "$PKG_NAME"
+
+      - name: Upload archives to the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.PKG_NAME }}.tar.gz
+            ${{ env.PKG_NAME }}.zip

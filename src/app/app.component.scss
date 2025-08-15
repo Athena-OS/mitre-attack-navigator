@@ -1,0 +1,58 @@
+@import '../colors.scss';
+
+.app-container {
+    @include adaptive-color('background-color', color(body), color(dark-1));
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    
+    /* Native scrollbar styling for WebKit browsers */
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        @include adaptive-color('background', #f1f1f1, rgba(255, 255, 255, 0.1));
+        border-radius: 6px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        @include adaptive-color('background', #c1c1c1, rgba(255, 255, 255, 0.3));
+        border-radius: 6px;
+        
+        &:hover {
+            @include adaptive-color('background', #a8a8a8, rgba(255, 255, 255, 0.5));
+        }
+    }
+    
+    /* Native scrollbar styling for Firefox */
+    scrollbar-width: thin;
+    @include adaptive-color('scrollbar-color', #c1c1c1 #f1f1f1, rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1));
+}
+
+.nav-app {
+    @include adaptive-color('background-color', color(light), darken(color(dark), 8%));
+
+    tabs {
+        font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 9pt;
+    }
+
+    .version-footer {
+        @include adaptive-color('color', #000000, #ffffff);
+        font-size: 24px;
+        border: none;
+        background-color: transparent;
+        text-align: left;
+        margin-left: 16px;
+        padding: 0;
+        display: block;
+        position: fixed;
+        bottom: 16px;
+        @media print {
+            display: none;
+        }
+    }
+}

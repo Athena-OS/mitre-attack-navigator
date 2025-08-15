@@ -1,0 +1,13 @@
+<div [ngClass]="user_theme">
+    <div class="app-container">
+        <div class="nav-app">
+            <tabs (onUserThemeChange)="themeChangeHandler($event)" [userTheme]="user_theme"></tabs>
+            <h1 class="version-footer z-0">
+               <span class="opacity-20">
+                MITRE </span> <br />
+                <span class="tracking-tight text-4xl font-semibold opacity-20">ATT&CK Navigator</span>
+                 <br />
+                 <span class="text-sm block opacity-20 font-mono">v{{ navVersion }}</span></h1>
+        </div>
+    </div>
+</div>

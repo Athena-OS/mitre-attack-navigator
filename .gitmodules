@@ -1,0 +1,6 @@
+[submodule "src/assets/attack-stix-data"]
+	path = src/assets/attack-stix-data
+	url = https://github.com/mitre-attack/attack-stix-data.git
+[submodule "src/assets/cti"]
+	path = src/assets/cti
+	url = https://github.com/mitre/cti.git

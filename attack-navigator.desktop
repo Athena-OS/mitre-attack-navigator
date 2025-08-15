@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=MITRE ATT&CK Navigator
+Exec=attack-navigator
+Icon=mitre
+Terminal=false
+Type=Application
+Categories=Tags;Describing;Application;Utility
