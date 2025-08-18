@@ -67,9 +67,6 @@ export class DataTableComponent implements AfterViewInit, OnDestroy {
     public downloadAnnotationsOnVisibleTechniques: boolean = false;
 
     showControlsBar = true;
-    previousControlSection = '';
-
-    currentControlSection = 'selection';
 
     showHelpDropDown = false;
 
@@ -517,29 +514,6 @@ export class DataTableComponent implements AfterViewInit, OnDestroy {
 
     toggleShowControlsBar() {
         this.showControlsBar = !this.showControlsBar;
-    }
-
-    setCurrentControlSection(controlType) {
-        this.currentControlSection = controlType;
-        if (this.previousControlSection === controlType && this.showControlsBar) {
-            this.showControlsBar = false;
-        } else {
-            this.showControlsBar = true;
-        }
-        this.previousControlSection = controlType;
-    }
-
-    /**
-     * Handle control section change from select dropdown
-     */
-    onControlSectionChange(controlType: string) {
-        if (controlType) {
-            this.currentControlSection = controlType;
-            this.showControlsBar = true;
-            this.previousControlSection = controlType;
-        } else {
-            this.showControlsBar = false;
-        }
     }
 
     /**

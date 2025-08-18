@@ -293,6 +293,7 @@ img.interactive, button img, a img {
 
     text-align: right;
     display: block;
+    padding-top: 12px; // Space for section labels
     @media print {
         display: none;
     }
@@ -311,25 +312,40 @@ img.interactive, button img, a img {
     .control-sections > li {
         list-style: none;
         display: inline-block;
-        // &:not(:last-child){
-        border-left: 1px solid darken(color(panel-dark), 8%);
-        padding: 0 5px 0 5px;
+        padding: 0 6px 0 6px;
         position: relative;
+        
+        // Small vertical separator between sections (not on first item)
+        &:not(:first-child)::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 20px;
+            @include adaptive-color('background-color', darken(color(panel-dark), 15%), lighten(color(dark-2), 15%));
+        }
 
         // label for a section of controls, e.g layer controls or technique controls
         .section-label {
-            @include adaptive-color('background-color', color(panel-dark), color(dark-2));
+            @include adaptive-color('background-color', lighten(color(panel-dark), 8%), color(dark-4));
             @include adaptive-color('color', color(tab-text-color), on-color(dark));
-            font-size: 8pt;
-            top: -12px;
+            font-size: 8px;
+            font-weight: 600;
+            top: -14px;
+            left: 8px;
             position: absolute;
-            padding: 0 5px;
-            border-radius: 2px 2px 0 0;
-            text-align: center;
+            padding: 2px 6px;
+            border-radius: 3px 3px 0 0;
+            text-align: left;
             cursor: default;
             user-select: none;
             white-space: nowrap;
-            z-index: 1;
+            z-index: 2;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .control-row-item {
@@ -338,6 +354,7 @@ img.interactive, button img, a img {
             position: relative;
             height: 34px;
             overflow: visible; // ensure absolutely positioned dropdowns can render outside the row
+            margin: 0 1px; // Further reduced spacing between buttons
 
             & > :not(.disabled) {
                 @include adaptive-color('color', black, white);
@@ -349,13 +366,29 @@ img.interactive, button img, a img {
 
             .control-row-button {
                 border-radius: 3px;
-                padding: 0px;
-                height: 24px;
-                margin: auto 5px auto;
+                padding: 6px;
+                width: 32px;
+                height: 32px;
+                margin: 0;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                box-sizing: border-box;
+                
+                // Force consistent height regardless of content structure
+                > * {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+                
+                // Handle nested Angular containers
+                ng-container,
+                span[ngSwitch] {
+                    display: contents !important;
+                }
 
                 &:hover {
                     @include adaptive-color('background-color', darken(color(panel-dark), 5%), color(dark-4));
@@ -370,22 +403,61 @@ img.interactive, button img, a img {
                 }
                 .control-label {
                     padding-right: 5px;
+                    font-size: 10px;
+                    white-space: nowrap;
+                }
+                
+                // Buttons with text labels get wider - this will apply when control-label is present
+                .control-label ~ * {
+                    // When a control label is present, the button should be wider
+                }
+                
+                // Use a more specific selector to override width when control-label is present
+                &:has(.control-label) {
+                    width: auto;
+                    min-width: 32px;
+                    padding: 6px 8px;
+                }
+                
+                // Fallback for browsers that don't support :has()
+                &.with-label {
+                    width: auto;
+                    min-width: 32px;
+                    padding: 6px 8px;
                 }
 
                 // Ensure icons are perfectly centered and remove baseline gap
                 span.material-icons,
                 span.material-symbols-outlined,
                 mat-icon {
-                    display: inline-flex;
+                    display: inline-flex !important;
                     align-items: center;
                     justify-content: center;
-                    height: 24px;
+                    height: 20px !important;
+                    width: 20px !important;
                     line-height: 1;
+                    font-size: 20px !important;
+                    flex-shrink: 0;
                 }
 
                 // Normalize SVG mat-icon box size
                 mat-icon {
-                    width: 24px;
+                    width: 20px !important;
+                    height: 20px !important;
+                }
+                
+                // Ensure nested icons in complex structures maintain sizing
+                * span.material-icons,
+                * span.material-symbols-outlined,
+                * mat-icon {
+                    display: inline-flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    height: 20px !important;
+                    width: 20px !important;
+                    line-height: 1;
+                    font-size: 20px !important;
+                    flex-shrink: 0;
                 }
             }
 

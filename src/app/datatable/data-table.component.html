@@ -12,13 +12,15 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
         <!-- Controls will appear on the left when expanded -->
         <div class="flex-1"></div>
         
-        <!-- Select menu positioned on the right -->
+        <!-- Controls will always be visible -->
         <ul *ngIf="showControlsBar" class="control-sections">
-            <li *ngIf="configService.getFeatureGroup('selection_controls', 'any') && currentControlSection === 'selection'" [class.label]="showControlLabels['selection']">
+            <!-- Selection Controls Section -->
+            <li *ngIf="configService.getFeatureGroup('selection_controls', 'any')" [class.label]="showControlLabels['selection']">
+                <div class="section-label">Selection Controls</div>
                 <div *ngIf="configService.getFeature('search') && isControlIncluded('selection_controls','search')" class="control-row-item">
                     <div
                         class="control-row-button noselect"
-                        [ngClass]="{ disabled: viewModel.sidebarContentType === 'layerUpgrade' }"
+                        [ngClass]="{ disabled: viewModel.sidebarContentType === 'layerUpgrade', 'with-label': showControlLabels['selection'] }"
                         (click)="openSearch()"
                         matTooltipPosition="below"
                         matTooltip="search & multiselect">
@@ -31,6 +33,7 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                 <div *ngIf="configService.getFeature('deselect_all') && isControlIncluded('selection_controls','deselect_all')" class="control-row-item">
                     <div
                         class="control-row-button noselect"
+                        [ngClass]="{ 'with-label': showControlLabels['selection'] }"
                         (click)="viewModel.clearSelectedTechniques(); currentDropdown = null"
                         matTooltipPosition="below"
                         matTooltip="deselect {{ this.viewModel.getSelectedTechniqueCount() }} techniques">
@@ -43,6 +46,7 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                 <div *ngIf="configService.getFeature('selecting_techniques') && isControlIncluded('selection_controls','selecting_techniques')" class="control-row-item">
                     <div
                         class="control-row-button dropdown noselect"
+                        [ngClass]="{ 'with-label': showControlLabels['selection'] }"
                         (click)="currentDropdown = currentDropdown !== 'selection_behavior' ? 'selection_behavior' : null"
                         matTooltipPosition="below"
                         matTooltip="selection behavior">
@@ -110,7 +114,9 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                     </div>
                 </div>
             </li>
-            <li *ngIf="configService.getFeatureGroup('layer_controls', 'any') && currentControlSection === 'layer'" [class.label]="showControlLabels['layer']">
+            <!-- Layer Controls Section -->
+            <li *ngIf="configService.getFeatureGroup('layer_controls', 'any')" [class.label]="showControlLabels['layer']">
+                <div class="section-label">Layer Controls</div>
                 <!-- layer name, description, metadata, and links -->
                 <!-- layer control settings -->
                 <div *ngIf="configService.getFeature('layer_settings') && isControlIncluded('layer_controls','layer_settings')" class="control-row-item">
@@ -518,12 +524,13 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                     </div>
                 </div>
             </li>
+            <!-- Technique Controls Section -->
             <li
                 *ngIf="
                     configService.getFeatureGroup('technique_controls', 'any') &&
-                    configService.getFeature('selecting_techniques') &&
-                    currentControlSection === 'technique'"
+                    configService.getFeature('selecting_techniques')"
                     [class.label]="showControlLabels['technique']">
+                <div class="section-label">Technique Controls</div>
                 <!-- TECHNIQUE CONTROLS -->
                 <!-- technique control settings -->
                 <!-- enable/disable technique -->
@@ -750,32 +757,7 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
             </li>
         </ul>
 
-            <div class="grid grid-cols-1">
-            <select 
-                id="control-section-select"
-                [(ngModel)]="currentControlSection"
-                (ngModelChange)="onControlSectionChange($event)"
-                class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-gray-800 py-[5px] pr-8 pl-3 text-base text-gray-900 dark:text-gray-100  outline-none focus:outline-none  sm:text-sm/6">
-                <option 
-                    *ngIf="configService.getFeatureGroupCount('selection_controls') >= 2"
-                    value="selection">
-                    Selection Controls
-                </option>
-                <option 
-                    *ngIf="configService.getFeatureGroupCount('layer_controls') >= 2"
-                    value="layer">
-                    Layer Controls
-                </option>
-                <option 
-                    *ngIf="configService.getFeatureGroupCount('technique_controls') >= 1"
-                    value="technique">
-                    Technique Controls
-                </option>
-            </select>
-            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-gray-100 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-              </svg>
-            </div>
+
 
         </div>
 </div>
