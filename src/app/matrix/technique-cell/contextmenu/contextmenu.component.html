@@ -28,8 +28,24 @@
             <div class="contextMenu-button" (click)="deselectAllInTactic()">deselect all techniques in tactic</div>
         </div>
         <div class="contextMenu-section">
-            <div class="contextMenu-button" (click)="viewTechnique()">view technique</div>
-            <div class="contextMenu-button" (click)="viewTactic()">view tactic</div>
+            <div class="contextMenu-button-container">
+                <div class="contextMenu-button" (click)="viewTechnique()">
+                    <span>view technique</span>
+                    <span *ngIf="techniqueOfflineAvailable" class="offline-indicator" title="Available offline">📱</span>
+                </div>
+                <div *ngIf="techniqueOfflineAvailable" class="contextMenu-button contextMenu-sub-button" (click)="viewTechnique(true)" title="View online version">
+                    view technique (online)
+                </div>
+            </div>
+            <div class="contextMenu-button-container">
+                <div class="contextMenu-button" (click)="viewTactic()">
+                    <span>view tactic</span>
+                    <span *ngIf="tacticOfflineAvailable" class="offline-indicator" title="Available offline">📱</span>
+                </div>
+                <div *ngIf="tacticOfflineAvailable" class="contextMenu-button contextMenu-sub-button" (click)="viewTactic(true)" title="View online version">
+                    view tactic (online)
+                </div>
+            </div>
         </div>
         <div class="contextMenu-section" *ngIf="configService.contextMenuItems.length > 0">
             <div

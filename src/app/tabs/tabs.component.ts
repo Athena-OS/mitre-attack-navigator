@@ -26,6 +26,7 @@ import { Subscription, forkJoin } from 'rxjs';
 import * as globals from '../utils/globals';
 import { LayerInformationComponent } from '../layer-information/layer-information.component';
 import { isSafari, openURL } from '../utils/utils';
+import { SyncService, SyncProgress } from '../services/sync.service';
 
 @Component({
     selector: 'tabs',
@@ -62,6 +63,10 @@ export class TabsComponent implements AfterViewInit {
     // UI state: theme dropdown menu
     public themeMenuOpen: boolean = false;
 
+    // Sync functionality state
+    public isSyncing: boolean = false;
+    public syncProgress: SyncProgress | null = null;
+
     // user input for layer-layer operations
     public opSettings: any = {
         domain: '',
@@ -96,7 +101,8 @@ export class TabsComponent implements AfterViewInit {
         public configService: ConfigService,
         public snackBar: MatSnackBar,
         private renderer: Renderer2,
-        private elementRef: ElementRef
+        private elementRef: ElementRef,
+        private syncService: SyncService
     ) {
         console.debug('initializing tabs component');
         this.newBlankTab();
@@ -108,6 +114,9 @@ export class TabsComponent implements AfterViewInit {
             if (!this.activeTab) this.selectTab(this.layerTabs[0]);
         });
         this.bannerContent = this.configService.banner;
+
+        // Setup sync service listeners
+        this.setupSyncListeners();
     }
 
     ngAfterViewInit(): void {
@@ -1073,5 +1082,76 @@ export class TabsComponent implements AfterViewInit {
     /** Get all view models in the same domain/version */
     public getFilteredVMs(): ViewModel[] {
         return this.viewModelsService.viewModels.filter((vm) => vm.domainVersionID == this.opSettings.domain);
+    }
+
+    /**
+     * Setup sync service event listeners
+     */
+    private setupSyncListeners(): void {
+        this.syncService.syncProgress.subscribe((progress: SyncProgress) => {
+            this.syncProgress = progress;
+            this.isSyncing = !progress.is_complete;
+        });
+    }
+
+    /**
+     * Handle sync button click - collect all technique and tactic URLs and sync them
+     */
+    public async handleSyncClick(): Promise<void> {
+        try {
+            const urlsToSync = await this.collectAllUrls();
+
+            if (urlsToSync.length === 0) {
+                this.snackBar.open('No content to sync. Load some layers first.', 'DISMISS', {
+                    duration: 3000,
+                });
+                return;
+            }
+
+            this.snackBar.open(`Starting sync of ${urlsToSync.length} items...`, 'DISMISS', {
+                duration: 2000,
+            });
+
+            await this.syncService.syncContent(urlsToSync);
+
+            this.snackBar.open('Sync completed successfully!', 'DISMISS', {
+                duration: 3000,
+            });
+        } catch (error) {
+            console.error('Sync failed:', error);
+            this.snackBar.open('Sync failed. Check console for details.', 'DISMISS', {
+                duration: 5000,
+            });
+        }
+    }
+
+    /**
+     * Collect all technique and tactic URLs from all loaded data
+     */
+    private async collectAllUrls(): Promise<string[]> {
+        const urls = new Set<string>();
+
+        // Iterate through all domains and their techniques/tactics
+        for (const domain of this.dataService.domains) {
+            if (!domain.dataLoaded) continue;
+
+            // Get all techniques and their URLs
+            const allTechniques = this.dataService.getDomain(domain.id).techniques;
+            allTechniques.forEach((technique) => {
+                if (technique.url) {
+                    urls.add(technique.url);
+                }
+            });
+
+            // Get all tactics and their URLs
+            const allTactics = this.dataService.getDomain(domain.id).tactics;
+            allTactics.forEach((tactic) => {
+                if (tactic.url) {
+                    urls.add(tactic.url);
+                }
+            });
+        }
+
+        return Array.from(urls);
     }
 }

@@ -23,7 +23,6 @@
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-    user-drag: none;
 }
 
 /* Allow text selection only where needed */
@@ -118,16 +117,16 @@ body {
 
 /* Disable context menus globally for native feel */
 * {
-    -webkit-context-menu: none;
-    -moz-context-menu: none;
-    context-menu: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 /* Allow context menus only on inputs and text areas */
 input, textarea, [contenteditable] {
-    -webkit-context-menu: auto;
-    -moz-context-menu: auto;
-    context-menu: auto;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
 }
 
 /* Disable image dragging */
@@ -136,7 +135,6 @@ img {
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-    user-drag: none;
     pointer-events: none;
 }
 
@@ -408,9 +406,6 @@ img.interactive, button img, a img {
                 }
                 
                 // Buttons with text labels get wider - this will apply when control-label is present
-                .control-label ~ * {
-                    // When a control label is present, the button should be wider
-                }
                 
                 // Use a more specific selector to override width when control-label is present
                 &:has(.control-label) {

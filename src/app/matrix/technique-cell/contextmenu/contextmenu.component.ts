@@ -5,6 +5,7 @@ import { ViewModelsService } from '../../../services/viewmodels.service';
 import { ConfigService } from '../../../services/config.service';
 import { CellPopover } from '../cell-popover';
 import { openURL } from 'src/app/utils/utils';
+import { SyncService } from '../../../services/sync.service';
 
 @Component({
     selector: 'app-contextmenu',
@@ -19,6 +20,10 @@ export class ContextmenuComponent extends CellPopover implements OnInit {
     public placement: string;
     @Output() close = new EventEmitter<any>();
 
+    // Track offline availability
+    public techniqueOfflineAvailable: boolean = false;
+    public tacticOfflineAvailable: boolean = false;
+
     public get techniqueVM(): TechniqueVM {
         return this.viewModel.getTechniqueVM(this.technique, this.tactic);
     }
@@ -30,13 +35,27 @@ export class ContextmenuComponent extends CellPopover implements OnInit {
     constructor(
         private element: ElementRef,
         public configService: ConfigService,
-        public viewModelsService: ViewModelsService
+        public viewModelsService: ViewModelsService,
+        private syncService: SyncService
     ) {
         super(element);
     }
 
     ngOnInit() {
         this.placement = this.getPosition();
+        this.checkOfflineAvailability();
+    }
+
+    private async checkOfflineAvailability() {
+        const urls = [];
+        if (this.technique?.url) urls.push(this.technique.url);
+        if (this.tactic?.url) urls.push(this.tactic.url);
+
+        if (urls.length > 0) {
+            const availability = await this.syncService.checkOfflineAvailability(urls);
+            if (this.technique?.url) this.techniqueOfflineAvailable = availability[0] || false;
+            if (this.tactic?.url) this.tacticOfflineAvailable = availability[this.technique?.url ? 1 : 0] || false;
+        }
     }
 
     public closeContextmenu() {
@@ -94,14 +113,13 @@ export class ContextmenuComponent extends CellPopover implements OnInit {
         this.closeContextmenu();
     }
 
-    public viewTechnique() {
-        openURL(this.technique.url)
-
+    public viewTechnique(forceOnline: boolean = false) {
+        openURL(this.technique.url, !forceOnline);
         this.closeContextmenu();
     }
 
-    public viewTactic() {
-        openURL(this.tactic.url)
+    public viewTactic(forceOnline: boolean = false) {
+        openURL(this.tactic.url, !forceOnline);
         this.closeContextmenu();
     }
 

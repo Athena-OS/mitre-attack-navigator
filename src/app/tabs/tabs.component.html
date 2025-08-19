@@ -101,10 +101,64 @@
 <!-- new tab template -->
 <ng-template [ngIf]="activeTab && !activeTab.isDataTable">
     <div class="new-tab">
-        <div class="flex justify-between">
+        <div class="flex items-center justify-between pb-4">
         <div class="description">
-                <h2 class="text-2xl font-semibold pb-4">Quick Actions</h2>
+                <h2 class="text-lg font-semibold">Quick Actions</h2>
         </div>
+            <div class="flex items-center gap-2">
+                <!-- Sync button -->
+                <div class="sync-button relative" (click)="$event.stopPropagation()">
+                    <button type="button"
+                            (click)="handleSyncClick()"
+                            [disabled]="isSyncing"
+                            class="flex items-center gap-2 rounded-md border border-transparent px-2 py-1 text-sm font-medium transition-colors"
+                            [ngClass]="{
+                              'text-gray-200 hover:bg-gray-800 hover:text-white disabled:text-gray-500 disabled:hover:bg-transparent': getActiveTheme() === 'dark',
+                              'text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:text-gray-400 disabled:hover:bg-transparent': getActiveTheme() === 'light',
+                              'text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white disabled:text-gray-400 dark:disabled:text-gray-500 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent': getActiveTheme() === 'system'
+                            }"
+                            [title]="isSyncing ? 'Syncing offline content...' : 'Sync content for offline viewing'">
+                        <span class="inline-flex items-center gap-1">
+                            <!-- Sync icon -->
+                            <svg *ngIf="!isSyncing" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                 [ngClass]="{
+                                   'fill-gray-200': getActiveTheme() === 'dark',
+                                   'fill-gray-500': getActiveTheme() === 'light',
+                                   'fill-gray-500 dark:fill-gray-200': getActiveTheme() === 'system'
+                                 }" viewBox="0 0 24 24">
+                                <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                            </svg>
+                            <!-- Loading spinner -->
+                            <svg *ngIf="isSyncing" class="animate-spin h-5 w-5"
+                                 [ngClass]="{
+                                   'fill-gray-200': getActiveTheme() === 'dark',
+                                   'fill-gray-500': getActiveTheme() === 'light',
+                                   'fill-gray-500 dark:fill-gray-200': getActiveTheme() === 'system'
+                                 }" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>{{ isSyncing ? 'Syncing...' : 'Sync' }}</span>
+                        </span>
+                    </button>
+                    
+                    <!-- Sync progress tooltip -->
+                    <div *ngIf="isSyncing && syncProgress" class="absolute top-full right-0 z-50 mt-2 w-64 origin-top-right rounded-md border p-3 shadow-lg"
+                         [ngClass]="{
+                           'border-gray-700 bg-gray-900 text-gray-200': getActiveTheme() === 'dark',
+                           'border-gray-200 bg-white text-gray-700': getActiveTheme() === 'light',
+                           'border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200': getActiveTheme() === 'system'
+                         }">
+                        <div class="text-sm font-medium mb-2">Sync Progress</div>
+                        <div class="text-xs mb-2">{{ syncProgress.completed }} / {{ syncProgress.total }} items</div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+                            <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" 
+                                 [style.width.%]="(syncProgress.completed / syncProgress.total) * 100"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ syncProgress.current_item }}</div>
+                    </div>
+                </div>
+                
             <div class="theme-button relative" (click)="$event.stopPropagation()">
                 <button type="button"
                         (click)="toggleThemeMenu($event)"
@@ -187,6 +241,7 @@
                 </div>
             </div>
             </div>
+        </div>
         <mat-accordion class="headers-align z-10">
             <!-- Create new layer interface -->
             <mat-expansion-panel #newlayer>
@@ -610,4 +665,3 @@
         (dropdownChange)="dropdownEnabled = $event"
         (onScroll)="adjustHeader($event)"></DataTable>
 </ng-template>
-</div>
