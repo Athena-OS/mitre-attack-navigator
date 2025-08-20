@@ -15,6 +15,24 @@ listen('offline-content-available', (event) => {
 });
 
 function displayOfflineContentModal(content: string) {
+    // add css files to the head
+    const head = document.head;
+
+    const cssFiles = [
+        'assets/css/bootstrap.min.css',
+        'assets/css/bootstrap-tourist.css',
+        'assets/css/bootstrap-select.min.css',
+        'assets/css/brands.min.css',
+        'assets/css/fontawesome.min.css',
+        'assets/css/style-attack.css',
+    ];
+    cssFiles.forEach((cssFile) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = cssFile;
+        head.appendChild(link);
+    });
+
     // Create modal overlay
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -56,7 +74,7 @@ function displayOfflineContentModal(content: string) {
         border-bottom: 1px solid #34495e;
     `;
     header.innerHTML = `
-        <h2 style="margin: 0;">Offline Content Viewer</h2>
+        <h2 class="text-base font-semibold" style="margin: 0 !important;">Offline Content Viewer</h2>
         <button id="close-modal" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
     `;
 
@@ -78,12 +96,22 @@ function displayOfflineContentModal(content: string) {
     // Add to document
     document.body.appendChild(modal);
 
+    function removeOfflineCSS() {
+        cssFiles.forEach((cssFile) => {
+            const link = document.querySelector(`link[href="${cssFile}"]`);
+            if (link) {
+                link.remove();
+            }
+        });
+    }
+
     // Add close functionality
     const closeBtn = document.getElementById('close-modal');
     if (closeBtn) {
         closeBtn.onclick = () => {
             document.body.removeChild(modal);
             currentOfflineContent = null;
+            removeOfflineCSS();
         };
     }
 
@@ -92,6 +120,7 @@ function displayOfflineContentModal(content: string) {
         if (e.target === modal) {
             document.body.removeChild(modal);
             currentOfflineContent = null;
+            removeOfflineCSS();
         }
     };
 
@@ -100,6 +129,7 @@ function displayOfflineContentModal(content: string) {
         if (e.key === 'Escape') {
             document.body.removeChild(modal);
             currentOfflineContent = null;
+            removeOfflineCSS();
             document.removeEventListener('keydown', handleEscape);
         }
     };

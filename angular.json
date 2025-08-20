@@ -22,7 +22,12 @@
                             { "glob": "*.md", "input": "../", "output": "/" },
                             { "glob": "**/*", "input": "../layers", "output": "/layers" },
                             "src/assets",
-                            "src/favicon.ico"
+                            "src/favicon.ico",
+                            {
+                                "glob": "**/*",
+                                "input": "src/theme/images",
+                                "output": "/theme/images/"
+                              }
                         ],
                         "styles": ["src/styles.scss"],
                         "scripts": [

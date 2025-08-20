@@ -73,7 +73,6 @@ async fn download_and_store_content(app: AppHandle, urls: Vec<String>) -> Result
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         );
         request = request.header("Accept-Language", "en-US,en;q=0.5");
-        request = request.header("Accept-Encoding", "gzip, deflate");
         request = request.header("Connection", "keep-alive");
         request = request.header("Upgrade-Insecure-Requests", "1");
 
@@ -286,14 +285,10 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }}
         h1, h2, h3 {{ color: #333; }}
-        .offline-notice {{ background: #f0f0f0; padding: 10px; border-left: 4px solid #007cba; margin-bottom: 20px; }}
         .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 20px; }}
     </style>
 </head>
 <body>
-    <div class="offline-notice">
-        <strong>Offline Content</strong> - This content was downloaded for offline viewing.
-    </div>
     <div class="original-url">
         <strong>Original URL:</strong> <a href="{}" target="_blank">{}</a>
     </div>
@@ -320,14 +315,10 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <title>MITRE ATT&CK - Offline Content</title>
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }}
-        .offline-notice {{ background: #f0f0f0; padding: 10px; border-left: 4px solid #007cba; margin-bottom: 20px; }}
         .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 20px; }}
     </style>
 </head>
 <body>
-    <div class="offline-notice">
-        <strong>Offline Content</strong> - This content was downloaded for offline viewing.
-    </div>
     <div class="original-url">
         <strong>Original URL:</strong> <a href="{}" target="_blank">{}</a>
     </div>

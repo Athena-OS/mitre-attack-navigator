@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 1420 --watch=false",
+    "start": "ng serve --port 1420",
     "build": "ng build --configuration production --aot=false --build-optimizer=false",
     "watch": "ng build --watch --configuration development",
     "tauri": "tauri"
