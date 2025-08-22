@@ -283,9 +283,9 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MITRE ATT&CK - Offline Content</title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }}
+        body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; margin-top: 6px }}
         h1, h2, h3 {{ color: #333; }}
-        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 20px; }}
+        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; }}
     </style>
 </head>
 <body>
@@ -314,8 +314,9 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MITRE ATT&CK - Offline Content</title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }}
-        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 20px; }}
+        body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; margin-top: 6px }}
+        h1, h2, h3 {{ color: #333; }}
+        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; }}
     </style>
 </head>
 <body>

@@ -60,6 +60,10 @@ function displayOfflineContentModal(content: string) {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
     `;
 
     // Create header
@@ -85,8 +89,43 @@ function displayOfflineContentModal(content: string) {
         padding: 20px;
         overflow-y: auto;
         line-height: 1.6;
+        user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        cursor: text;
     `;
     contentArea.innerHTML = content;
+
+    // Add CSS to ensure all content elements allow text selection
+    const style = document.createElement('style');
+    style.textContent = `
+        #offline-content-modal * {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+        }
+        #offline-content-modal a {
+            cursor: pointer !important;
+        }
+        #offline-content-modal p, #offline-content-modal div, #offline-content-modal span {
+            cursor: text !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Prevent event bubbling on content area to allow text selection
+    contentArea.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+    });
+
+    contentArea.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Add ID for CSS targeting
+    contentArea.id = 'offline-content-modal';
 
     // Assemble modal
     modalContent.appendChild(header);
@@ -103,6 +142,12 @@ function displayOfflineContentModal(content: string) {
                 link.remove();
             }
         });
+
+        // Remove dynamically added style for text selection
+        const style = document.querySelector('style');
+        if (style && style.textContent?.includes('#offline-content-modal')) {
+            style.remove();
+        }
     }
 
     // Add close functionality

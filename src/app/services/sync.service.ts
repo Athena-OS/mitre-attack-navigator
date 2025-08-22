@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter, NgZone } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 
@@ -16,15 +16,18 @@ export class SyncService {
     public syncProgress = new EventEmitter<SyncProgress>();
     public isSyncing = false;
 
-    constructor() {
+    constructor(private ngZone: NgZone) {
         this.setupProgressListener();
     }
 
     private async setupProgressListener() {
         await listen('sync-progress', (event) => {
             const progress = event.payload as SyncProgress;
-            this.syncProgress.emit(progress);
-            this.isSyncing = !progress.is_complete;
+            // Run progress updates inside Angular's zone to trigger change detection
+            this.ngZone.run(() => {
+                this.syncProgress.emit(progress);
+                this.isSyncing = !progress.is_complete;
+            });
         });
     }
 

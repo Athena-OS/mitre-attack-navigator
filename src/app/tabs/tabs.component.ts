@@ -3,6 +3,7 @@ import {
     ViewChild,
     TemplateRef,
     AfterViewInit,
+    OnDestroy,
     ViewEncapsulation,
     Input,
     Output,
@@ -35,7 +36,7 @@ import { SyncService, SyncProgress } from '../services/sync.service';
     providers: [ViewModelsService],
     encapsulation: ViewEncapsulation.None,
 })
-export class TabsComponent implements AfterViewInit {
+export class TabsComponent implements AfterViewInit, OnDestroy {
     @Input() userTheme: string;
     @Output() onUserThemeChange = new EventEmitter<string>();
     @ViewChild('safariWarning') safariWarning: TemplateRef<any>;
@@ -131,6 +132,13 @@ export class TabsComponent implements AfterViewInit {
 
         // Add global link handler
         this.setupGlobalLinkHandler();
+    }
+
+    ngOnDestroy(): void {
+        // Clean up subscription to prevent memory leaks
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 
     private setupGlobalLinkHandler(): void {
@@ -1088,7 +1096,12 @@ export class TabsComponent implements AfterViewInit {
      * Setup sync service event listeners
      */
     private setupSyncListeners(): void {
-        this.syncService.syncProgress.subscribe((progress: SyncProgress) => {
+        // Clean up any existing subscription
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+
+        this.subscription = this.syncService.syncProgress.subscribe((progress: SyncProgress) => {
             this.syncProgress = progress;
             this.isSyncing = !progress.is_complete;
         });

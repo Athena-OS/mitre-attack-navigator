@@ -329,8 +329,8 @@ img.interactive, button img, a img {
         .section-label {
             @include adaptive-color('background-color', lighten(color(panel-dark), 8%), color(dark-4));
             @include adaptive-color('color', color(tab-text-color), on-color(dark));
-            font-size: 8px;
-            font-weight: 600;
+            font-size: 9px;
+            font-weight: 200;
             top: -14px;
             left: 8px;
             position: absolute;
@@ -342,7 +342,7 @@ img.interactive, button img, a img {
             white-space: nowrap;
             z-index: 2;
             letter-spacing: 0.2px;
-            text-transform: uppercase;
+            text-transform: lowercase;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
