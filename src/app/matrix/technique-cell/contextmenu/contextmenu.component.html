@@ -1,72 +1,187 @@
-<div class="contextmenu" (contextmenu)="closeContextmenu()">
-    <!-- covers entire screen -->
-    <div class="cover" (click)="closeContextmenu()"></div>
-    <!-- the actual menu -->
-    <div [ngClass]="'menu ' + placement">
-        <div class="contextMenu-section">
-            <div class="contextMenu-header">{{ technique.name }} ({{ technique.attackID }})</div>
+<div class="fixed inset-0 z-50" (contextmenu)="closeContextmenu()">
+    <!-- Full screen overlay -->
+    <div class="absolute inset-0 bg-transparent" (click)="closeContextmenu()"></div>
+
+    <!-- MacOS-style context menu -->
+    <div class="absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-0.5 min-w-[180px] max-w-[260px] text-xs z-50"
+         [style.left]="getMenuPosition().left"
+         [style.top]="getMenuPosition().top">
+        <!-- Technique header -->
+        <div class="px-2 py-1.5 text-[10px] font-medium text-gray-600 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 truncate">
+            {{ technique.name }} ({{ technique.attackID }})
         </div>
-        <div class="contextMenu-section">
-            <div class="contextMenu-button" (click)="pinCell()">pin/unpin tooltip</div>
+
+        <!-- Menu sections -->
+        <div class="py-0.5">
+            <!-- Pin/Unpin -->
+            <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="pinCell()">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                Pin/Unpin Tooltip
+            </button>
         </div>
-        <div *ngIf="configService.getFeature('selecting_techniques')" class="contextMenu-section">
-            <div class="contextMenu-button" (click)="select()">select</div>
-            <div class="contextMenu-button" (click)="addSelection()">add to selection</div>
-            <div class="contextMenu-button" (click)="removeSelection()">remove from selection</div>
-        </div>
-        <div *ngIf="configService.getFeature('selecting_techniques')" class="contextMenu-section">
-            <div class="contextMenu-button" (click)="selectAll()">select all</div>
-            <div class="contextMenu-button" (click)="deselectAll()">deselect all</div>
-            <div class="contextMenu-button" (click)="invertSelection()">invert selection</div>
-        </div>
-        <div *ngIf="configService.getFeature('selecting_techniques')" class="contextMenu-section">
-            <div class="contextMenu-button" (click)="selectAnnotated()">select annotated</div>
-            <div class="contextMenu-button" (click)="selectUnannotated()">select unannotated</div>
-        </div>
-        <div *ngIf="configService.getFeature('selecting_techniques')" class="contextMenu-section">
-            <div class="contextMenu-button" (click)="selectAllInTactic()">select all techniques in tactic</div>
-            <div class="contextMenu-button" (click)="deselectAllInTactic()">deselect all techniques in tactic</div>
-        </div>
-        <div class="contextMenu-section">
-            <div class="contextMenu-button-container">
-                <div class="contextMenu-button" (click)="viewTechnique()">
-                    <span>view technique</span>
-                    <span *ngIf="techniqueOfflineAvailable" class="offline-indicator" title="Available offline">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="#e3e3e3"><path d="M320-280h320v-80H320v80Zm118-120 226-226-57-55-169 169-86-86-56 56 142 142Zm42 320q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
-                    </span>
-                </div>
-                <div *ngIf="techniqueOfflineAvailable" class="contextMenu-button contextMenu-sub-button" (click)="viewTechnique(true)" title="View online version">
-                    view technique (online)
-                </div>
-            </div>
-            <div class="contextMenu-button-container">
-                <div class="contextMenu-button" (click)="viewTactic()">
-                    <span>view tactic</span>
-                    <span *ngIf="tacticOfflineAvailable" class="offline-indicator" title="Available offline">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="#e3e3e3"><path d="M320-280h320v-80H320v80Zm118-120 226-226-57-55-169 169-86-86-56 56 142 142Zm42 320q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
-                    </span>
-                </div>
-                <div *ngIf="tacticOfflineAvailable" class="contextMenu-button contextMenu-sub-button" (click)="viewTactic(true)" title="View online version">
-                    view tactic (online)
-                </div>
+
+        <!-- Selection section (if enabled) -->
+        <div *ngIf="configService.getFeature('selecting_techniques')" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="select()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Select
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="addSelection()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                    </svg>
+                    Add to Selection
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="removeSelection()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Remove from Selection
+                </button>
             </div>
         </div>
-        <div class="contextMenu-section" *ngIf="configService.contextMenuItems.length > 0">
-            <div
-                class="contextMenu-button"
-                *ngFor="let contextMenuItem of configService.contextMenuItems"
-                (click)="openCustomContextMenuItem(contextMenuItem)">
-                {{ contextMenuItem.label }}
+
+        <!-- Bulk selection section (if enabled) -->
+        <div *ngIf="configService.getFeature('selecting_techniques')" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="selectAll()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a1 1 0 000 2h6a1 1 0 100-2H7zM7 6a1 1 0 000 2h6a1 1 0 100-2H7zM7 10a1 1 0 000 2h4a1 1 0 100-2H7z"/>
+                    </svg>
+                    Select All
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="deselectAll()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a1 1 0 000 2h6a1 1 0 100-2H7zM7 6a1 1 0 000 2h6a1 1 0 100-2H7zM7 10a1 1 0 000 2h4a1 1 0 100-2H7z"/>
+                    </svg>
+                    Deselect All
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="invertSelection()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 3a1 1 0 00-1 1v1a1 1 0 102 0V4a1 1 0 00-1-1zM6 7a1 1 0 011-1h1a1 1 0 110 2H7a1 1 0 01-1-1zM11 6a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1V7a1 1 0 011-1zM5 11a1 1 0 100 2h1a1 1 0 100-2H5zM14 11a1 1 0 100 2h1a1 1 0 100-2h-1z"/>
+                    </svg>
+                    Invert Selection
+                </button>
             </div>
         </div>
-        <div *ngIf="links.length" class="contextMenu-section">
-            <div class="link-container" *ngFor="let link of links">
-                <div *ngIf="!link.divider; else divider" class="contextMenu-button" (click)="openLink(link)">
-                    {{ link.label }}
+
+        <!-- Annotation section (if enabled) -->
+        <div *ngIf="configService.getFeature('selecting_techniques')" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="selectAnnotated()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Select Annotated
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="selectUnannotated()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    Select Unannotated
+                </button>
+            </div>
+        </div>
+
+        <!-- Tactic-wide section (if enabled) -->
+        <div *ngIf="configService.getFeature('selecting_techniques')" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="selectAllInTactic()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                    Select All in Tactic
+                </button>
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="deselectAllInTactic()">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                    Deselect All in Tactic
+                </button>
+            </div>
+        </div>
+
+        <!-- View section -->
+        <div class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <!-- View Technique -->
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center justify-between transition-colors" (click)="viewTechnique()">
+                    <div class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>View Technique</span>
+                    </div>
+                    <div *ngIf="techniqueOfflineAvailable" class="text-green-600 dark:text-green-400" title="Available offline">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </button>
+                <button *ngIf="techniqueOfflineAvailable" class="w-full px-2 py-1 text-left text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 pl-6 transition-colors text-[10px]" (click)="viewTechnique(true)" title="View online version">
+                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    View Online
+                </button>
+
+                <!-- View Tactic -->
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center justify-between transition-colors" (click)="viewTactic()">
+                    <div class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>View Tactic</span>
+                    </div>
+                    <div *ngIf="tacticOfflineAvailable" class="text-green-600 dark:text-green-400" title="Available offline">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </button>
+                <button *ngIf="tacticOfflineAvailable" class="w-full px-2 py-1 text-left text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 pl-6 transition-colors text-[10px]" (click)="viewTactic(true)" title="View online version">
+                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    View Online
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom context menu items -->
+        <div *ngIf="configService.contextMenuItems.length > 0" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <button class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors"
+                        *ngFor="let contextMenuItem of configService.contextMenuItems"
+                        (click)="openCustomContextMenuItem(contextMenuItem)">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ contextMenuItem.label }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Links section -->
+        <div *ngIf="links.length" class="border-t border-gray-100 dark:border-gray-700">
+            <div class="py-0.5">
+                <div *ngFor="let link of links">
+                    <button *ngIf="!link.divider; else divider" class="w-full px-2 py-1 text-left text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-1.5 transition-colors" (click)="openLink(link)">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ link.label }}
+                    </button>
+                    <ng-template #divider>
+                        <div class="border-t border-gray-100 dark:border-gray-700 my-0.5"></div>
+                    </ng-template>
                 </div>
-                <ng-template #divider>
-                    <div class="divider"></div>
-                </ng-template>
             </div>
         </div>
     </div>

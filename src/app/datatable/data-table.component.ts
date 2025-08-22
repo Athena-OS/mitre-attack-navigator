@@ -600,15 +600,12 @@ export class DataTableComponent implements AfterViewInit, OnDestroy {
         switch (this.showSubtechniquesType) {
             case 1: // expand all subtechniques
                 this.expandSubtechniques();
-                console.log(this.showSubtechniquesType);
                 break;
             case 2: // expand only annotated subtechniques
                 this.expandSubtechniques(true);
-                console.log(this.showSubtechniquesType);
                 break;
             case 3: // collapse all subtechniques
                 this.collapseSubtechniques();
-                console.log(this.showSubtechniquesType);
                 this.showSubtechniquesType = 0;
                 break;
             case 0:

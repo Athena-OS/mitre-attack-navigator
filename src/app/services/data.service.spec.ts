@@ -359,7 +359,6 @@ describe('DataService', () => {
             ]);
             // compare versions
             let result = mockService.compareVersions(oldDomain.id, newDomain.id);
-            console.log(result);
             // validate comparison result
             expect(result).toBeInstanceOf(VersionChangelog);
             expect(result.newDomainVersionID).toEqual(newDomain.id);

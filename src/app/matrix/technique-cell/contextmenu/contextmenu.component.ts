@@ -17,6 +17,8 @@ export class ContextmenuComponent extends CellPopover implements OnInit {
     @Input() technique: Technique;
     @Input() tactic: Tactic;
     @Input() viewModel: ViewModel;
+    @Input() mouseX: number = 0;
+    @Input() mouseY: number = 0;
     public placement: string;
     @Output() close = new EventEmitter<any>();
 
@@ -137,5 +139,74 @@ export class ContextmenuComponent extends CellPopover implements OnInit {
     public openLink(link: Link) {
         openURL(link.url);
         this.closeContextmenu();
+    }
+
+    public getMenuPosition(): { left: string; top: string } {
+        if (!this.mouseX || !this.mouseY) {
+            // Fallback to center if no mouse position
+            return {
+                left: '50%',
+                top: '50%',
+            };
+        }
+
+        // Menu dimensions (approximate) - adjusted for compact design
+        const menuWidth = 220; // Smaller width for compact design
+        const menuHeight = 350; // Smaller height for compact design
+
+        // Viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate position with intelligent boundary checks
+        let left = this.mouseX;
+        let top = this.mouseY;
+
+        // Horizontal positioning logic
+        const spaceOnRight = viewportWidth - this.mouseX;
+        const spaceOnLeft = this.mouseX;
+
+        if (spaceOnRight >= menuWidth) {
+            // Enough space on the right, position normally
+            left = this.mouseX;
+        } else if (spaceOnLeft >= menuWidth) {
+            // Not enough space on right, but enough on left
+            left = this.mouseX - menuWidth;
+        } else {
+            // Not enough space on either side, position at edge with padding
+            if (spaceOnRight > spaceOnLeft) {
+                left = viewportWidth - menuWidth - 10;
+            } else {
+                left = 10;
+            }
+        }
+
+        // Vertical positioning logic
+        const spaceBelow = viewportHeight - this.mouseY;
+        const spaceAbove = this.mouseY;
+
+        if (spaceBelow >= menuHeight) {
+            // Enough space below, position normally
+            top = this.mouseY;
+        } else if (spaceAbove >= menuHeight) {
+            // Not enough space below, but enough above
+            top = this.mouseY - menuHeight;
+        } else {
+            // Not enough space above or below, position at edge with padding
+            if (spaceBelow > spaceAbove) {
+                top = viewportHeight - menuHeight - 10;
+            } else {
+                top = 10;
+            }
+        }
+
+        // Final safety checks
+        left = Math.max(5, Math.min(left, viewportWidth - menuWidth - 5));
+        top = Math.max(5, Math.min(top, viewportHeight - menuHeight - 5));
+
+        return {
+            left: `${left}px`,
+            top: `${top}px`,
+        };
     }
 }

@@ -17,6 +17,10 @@ export class TechniqueCellComponent extends Cell implements OnInit {
     @Output() unhighlight = new EventEmitter<any>();
     @Output() leftclick = new EventEmitter<any>(); // emit with the selected technique and the modifier keys
 
+    // Mouse position for context menu positioning
+    public mouseX: number = 0;
+    public mouseY: number = 0;
+
     public get isCellPinned(): boolean {
         return this.viewModelsService.pinnedCell === this.viewModel.getTechniqueVM(this.technique, this.tactic).technique_tactic_union_id;
     }
@@ -84,7 +88,12 @@ export class TechniqueCellComponent extends Cell implements OnInit {
     }
     public onRightClick(event) {
         if (!this.isCellPinned) this.viewModelsService.pinnedCell = '';
+        // Capture mouse position for context menu positioning
+        this.mouseX = event.pageX || event.clientX;
+        this.mouseY = event.pageY || event.clientY;
         this.showContextmenu = true;
+        // Prevent default context menu
+        event.preventDefault();
     }
 
     // return css classes for a technique

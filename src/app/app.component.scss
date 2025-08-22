@@ -51,6 +51,7 @@
         display: block;
         position: fixed;
         bottom: 16px;
+        user-select: none;
         @media print {
             display: none;
         }

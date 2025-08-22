@@ -33,10 +33,8 @@ export class SyncService {
 
     async syncContent(urls: string[]): Promise<void> {
         this.isSyncing = true;
-        console.log('Starting sync for', urls.length, 'URLs');
         try {
             await invoke('download_and_store_content', { urls });
-            console.log('Sync completed successfully');
         } catch (error) {
             console.error('Sync failed:', error);
             this.isSyncing = false;
@@ -57,9 +55,7 @@ export class SyncService {
 
     async checkOfflineAvailability(urls: string[]): Promise<boolean[]> {
         try {
-            console.log('Checking offline availability for', urls.length, 'URLs');
             const availability = (await invoke('check_offline_availability', { urls })) as boolean[];
-            console.log('Offline availability results:', availability);
             return availability;
         } catch (error) {
             console.error('Failed to check offline availability:', error);

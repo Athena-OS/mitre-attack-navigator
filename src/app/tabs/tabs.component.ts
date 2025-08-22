@@ -1151,16 +1151,30 @@ export class TabsComponent implements AfterViewInit, OnDestroy {
             // Get all techniques and their URLs
             const allTechniques = this.dataService.getDomain(domain.id).techniques;
             allTechniques.forEach((technique) => {
-                if (technique.url) {
+                if (technique?.url) {
                     urls.add(technique.url);
+                }
+                if (technique?.subtechniques && technique.subtechniques.length > 0) {
+                    technique.subtechniques.forEach((subtechnique) => {
+                        if (subtechnique?.url) {
+                            urls.add(subtechnique.url);
+                        }
+                    });
                 }
             });
 
             // Get all tactics and their URLs
             const allTactics = this.dataService.getDomain(domain.id).tactics;
             allTactics.forEach((tactic) => {
-                if (tactic.url) {
+                if (tactic?.url) {
                     urls.add(tactic.url);
+                }
+                if (tactic?.techniques && tactic.techniques.length > 0) {
+                    tactic.techniques.forEach((technique) => {
+                        if (technique?.url) {
+                            urls.add(technique.url);
+                        }
+                    });
                 }
             });
         }

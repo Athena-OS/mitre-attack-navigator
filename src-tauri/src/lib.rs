@@ -127,8 +127,6 @@ async fn download_and_store_content(app: AppHandle, urls: Vec<String>) -> Result
 
 #[tauri::command]
 async fn get_offline_content(app: AppHandle, url: String) -> Result<bool, String> {
-    println!("get_offline_content called for URL: {}", url);
-
     let app_data_dir = app
         .path()
         .app_data_dir()
@@ -137,11 +135,7 @@ async fn get_offline_content(app: AppHandle, url: String) -> Result<bool, String
     let offline_dir = app_data_dir.join("offline_content");
     let index_path = offline_dir.join("index.json");
 
-    println!("Offline directory: {:?}", offline_dir);
-    println!("Index path: {:?}", index_path);
-
     if !index_path.exists() {
-        println!("Index file does not exist");
         return Ok(false);
     }
 
@@ -151,29 +145,18 @@ async fn get_offline_content(app: AppHandle, url: String) -> Result<bool, String
     let index: OfflineIndex =
         serde_json::from_str(&index_content).map_err(|e| format!("Failed to parse index: {e}"))?;
 
-    println!("Index entries count: {}", index.entries.len());
-    println!("Looking for URL: {}", url);
-
     if let Some(filename) = index.entries.get(&url) {
-        println!("Found filename in index: {}", filename);
         let file_path = offline_dir.join(filename);
-        println!("File path: {:?}", file_path);
 
         if file_path.exists() {
-            println!("File exists, reading content...");
             let content = fs::read_to_string(file_path)
                 .map_err(|e| format!("Failed to read offline content: {e}"))?;
-            println!("Content length: {}", content.len());
 
             // Store the content temporarily and emit an event to the main window
             let _ = app.emit("offline-content-available", &content);
 
             return Ok(true);
-        } else {
-            println!("File does not exist");
         }
-    } else {
-        println!("URL not found in index");
     }
 
     Ok(false)
@@ -181,8 +164,6 @@ async fn get_offline_content(app: AppHandle, url: String) -> Result<bool, String
 
 #[tauri::command]
 async fn get_offline_content_raw(app: AppHandle, url: String) -> Result<Option<String>, String> {
-    println!("get_offline_content_raw called for URL: {}", url);
-
     let app_data_dir = app
         .path()
         .app_data_dir()
@@ -285,17 +266,17 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; margin-top: 6px }}
         h1, h2, h3 {{ color: #333; }}
-        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; }}
+        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; pointer-events: none;  }}
+        .original-url span {{ user-select: all; }}
     </style>
 </head>
 <body>
     <div class="original-url">
-        <strong>Original URL:</strong> <a href="{}" target="_blank">{}</a>
+        <strong>Original URL: </strong><span>{}</span>
     </div>
     {}
 </body>
 </html>"#,
-                    url,
                     url,
                     main_element.inner_html()
                 );
@@ -316,17 +297,18 @@ fn process_html_content(html_content: &str, url: &str) -> String {
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; margin-top: 6px }}
         h1, h2, h3 {{ color: #333; }}
-        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; }}
+        .original-url {{ color: #666; font-size: 0.9em; margin-bottom: 6px; pointer-events: none; }}
+        .original-url span {{ user-select: all; }}
     </style>
 </head>
 <body>
     <div class="original-url">
-        <strong>Original URL:</strong> <a href="{}" target="_blank">{}</a>
+        <strong>Original URL: </strong><span>{}</span>
     </div>
     {}
 </body>
 </html>"#,
-            url, url, html_content
+            url, html_content
         );
     }
 

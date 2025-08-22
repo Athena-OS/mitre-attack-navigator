@@ -2241,4 +2241,17 @@ div#sidebars {
 /*# sourceMappingURL=style-attack.css.map */
 .tab-content {
   min-width: fit-content;
+
 }
+
+  /* make links un-clickable */
+  a {
+    cursor: default;
+    pointer-events: none;
+
+    img {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+

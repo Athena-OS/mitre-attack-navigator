@@ -9,7 +9,6 @@ let currentOfflineContent: string | null = null;
 
 // Set up event listener for offline content
 listen('offline-content-available', (event) => {
-    console.log('Received offline content event');
     currentOfflineContent = event.payload as string;
     displayOfflineContentModal(currentOfflineContent);
 });
@@ -78,7 +77,7 @@ function displayOfflineContentModal(content: string) {
         border-bottom: 1px solid #34495e;
     `;
     header.innerHTML = `
-        <h2 class="text-base font-semibold" style="margin: 0 !important;">Offline Content Viewer</h2>
+        <h2 class="text-base font-semibold text-white" style="margin: 0 !important;">Offline Content Viewer</h2>
         <button id="close-modal" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
     `;
 
@@ -182,17 +181,12 @@ function displayOfflineContentModal(content: string) {
 }
 
 export async function openURL(link: string, tryOfflineFirst: boolean = true) {
-    console.log(`openURL called with link: ${link}, tryOfflineFirst: ${tryOfflineFirst}`);
-
     if (tryOfflineFirst) {
         try {
-            console.log('Attempting to open offline content...');
             // Try to open offline content first using the new command
             const offlineOpened = (await invoke('get_offline_content', { url: link })) as boolean;
-            console.log('Offline content opened:', offlineOpened);
 
             if (offlineOpened) {
-                console.log('Successfully opened offline content for:', link);
                 return;
             } else {
                 console.log('No offline content available for:', link);
@@ -203,7 +197,6 @@ export async function openURL(link: string, tryOfflineFirst: boolean = true) {
     }
 
     // Fallback to opening the original URL
-    console.log('Opening online URL:', link);
     await openUrl(link);
 }
 
