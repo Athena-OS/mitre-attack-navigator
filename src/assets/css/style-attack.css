@@ -2255,3 +2255,11 @@ div#sidebars {
     }
   }
 
+
+.collapse:not(.show) {
+  display: block !important;
+}
+
+.collapse {
+  visibility: visible !important;
+}
