@@ -2263,3 +2263,7 @@ div#sidebars {
 .collapse {
   visibility: visible !important;
 }
+
+* {
+  line-height: normal;
+}
